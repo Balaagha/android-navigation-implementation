@@ -10,19 +10,19 @@ import android.widget.RemoteViews
 
 
 class AuthorizeMeWidgetProvider : AppWidgetProvider() {
-  override fun onUpdate(
-      context: Context,
-      appWidgetManager: AppWidgetManager,
-      appWidgetIds: IntArray
-  ) {
-    val remoteViews = RemoteViews(
-        context.packageName,
-        R.layout.authorizeme_appwidget
-    )
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
+        val remoteViews = RemoteViews(
+            context.packageName,
+            R.layout.authorizeme_appwidget
+        )
 
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com"))
-    val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-    remoteViews.setOnClickPendingIntent(R.id.authorizeme_button, pendingIntent)
-    appWidgetManager.updateAppWidget(appWidgetIds, remoteViews)
-  }
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com"))
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        remoteViews.setOnClickPendingIntent(R.id.authorizeme_button, pendingIntent)
+        appWidgetManager.updateAppWidget(appWidgetIds, remoteViews)
+    }
 }
