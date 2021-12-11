@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.androidnavigationimplementation.R
 import com.example.androidnavigationimplementation.databinding.FragmentWelcomeBinding
@@ -21,6 +22,7 @@ class WelcomeFragment : Fragment() {
 
     private var param1: String? = null
     private var param2: String? = null
+    private var param3: UserInfoModel? = null
 
     companion object {
         @JvmStatic
@@ -37,8 +39,17 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let { arguments ->
+            val safeArgs = WelcomeFragmentArgs.fromBundle(arguments)
+            param1 = safeArgs.param1
+            param2 = safeArgs.param2
+            param3 = safeArgs.param3
+        }
         binding.txtWelcome.text =
             String.format(resources.getString(R.string.welcome_x_y), param1, param2)
+        param3?.let {
+            Toast.makeText(requireContext(),it.userName,Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

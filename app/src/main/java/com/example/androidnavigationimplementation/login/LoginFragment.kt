@@ -11,9 +11,11 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.example.androidnavigationimplementation.R
 import com.example.androidnavigationimplementation.common.ui.model.AuthUserView
 import com.example.androidnavigationimplementation.databinding.FragmentLoginBinding
+import com.example.androidnavigationimplementation.welcome.UserInfoModel
 
 class LoginFragment : Fragment() {
 
@@ -89,7 +91,13 @@ class LoginFragment : Fragment() {
             initLogin()
         }
 
-        binding.welcome.setOnClickListener {
+        binding.welcome.setOnClickListener { v ->
+            val action = LoginFragmentDirections.actionLoginToWelcome(
+                user,
+                getString(R.string.action_logged_in),
+                UserInfoModel(user)
+            )
+            v.findNavController().navigate(action)
         }
     }
 

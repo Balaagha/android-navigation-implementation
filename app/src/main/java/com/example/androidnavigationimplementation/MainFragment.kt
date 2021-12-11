@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.example.androidnavigationimplementation.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
@@ -28,10 +29,12 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnLogin.setOnClickListener {
+        binding.btnLogin.setOnClickListener { v ->
+            v.findNavController().navigate(R.id.actionLogin)
         }
 
-        binding.btnSignUp.setOnClickListener {
+        binding.btnSignUp.setOnClickListener { v ->
+            v.findNavController().navigate(R.id.actionSingUp)
         }
 
         binding.fab.setOnClickListener {
