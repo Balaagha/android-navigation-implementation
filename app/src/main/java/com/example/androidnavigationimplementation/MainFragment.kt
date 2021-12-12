@@ -1,5 +1,6 @@
 package com.example.androidnavigationimplementation
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +38,8 @@ class MainFragment : Fragment() {
             v.findNavController().navigate(R.id.actionSingUp)
         }
 
-        binding.fab.setOnClickListener {
+        binding.fab.setOnClickListener { v ->
+            v.findNavController().navigate(Uri.parse("myapp://home/welcome"))
         }
     }
 
