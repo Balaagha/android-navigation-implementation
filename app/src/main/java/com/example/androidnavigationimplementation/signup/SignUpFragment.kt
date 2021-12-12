@@ -97,7 +97,7 @@ class SignUpFragment : Fragment() {
         }
 
         binding.welcome.setOnClickListener { v ->
-            val action = SignUpFragmentDirections.actionSingUpToWelcome(
+            val action = SignUpFragmentDirections.actionWelcome(
                 user,
                 getString(R.string.action_logged_in),
                 UserInfoModel(user)

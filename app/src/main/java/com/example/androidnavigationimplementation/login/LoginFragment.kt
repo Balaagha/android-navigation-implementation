@@ -92,7 +92,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.welcome.setOnClickListener { v ->
-            val action = LoginFragmentDirections.actionLoginToWelcome(
+            val action = LoginFragmentDirections.actionWelcome(
                 user,
                 getString(R.string.action_logged_in),
                 UserInfoModel(user)
