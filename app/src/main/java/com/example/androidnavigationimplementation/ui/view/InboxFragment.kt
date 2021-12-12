@@ -5,13 +5,14 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.androidnavigationimplementation.R
 import com.example.androidnavigationimplementation.adapter.LetterAdapter
 import com.example.androidnavigationimplementation.data.model.FragmentType
 import com.example.androidnavigationimplementation.data.model.Letter
 import com.example.androidnavigationimplementation.ui.viewmodel.LettersViewModel
 import kotlinx.android.synthetic.main.fragment_inbox.*
 
-class InboxFragment : Fragment() {
+class InboxFragment : Fragment(R.layout.fragment_inbox) {
 
     private val lettersViewModel: LettersViewModel? = null
 

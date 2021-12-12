@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.example.androidnavigationimplementation.R
 import kotlinx.android.synthetic.main.fragment_privacy_policy.*
 
-class PrivacyPolicyFragment : Fragment() {
+class PrivacyPolicyFragment : Fragment(R.layout.fragment_privacy_policy) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
