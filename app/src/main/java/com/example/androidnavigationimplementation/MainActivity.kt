@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             layoutInflater, R.layout.nav_header_main, activityMainBinding.navView, false
         )
         headerBinding.ivEdit.setOnClickListener {
-            // TODO: navigate to edit profile fragment
+            navController.navigate(R.id.editProfileFragment)
             drawerLayout.closeDrawer(GravityCompat.START)
         }
         activityMainBinding.navView.addHeaderView(headerBinding.root)
