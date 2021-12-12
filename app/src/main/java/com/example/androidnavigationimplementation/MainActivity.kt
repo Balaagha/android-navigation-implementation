@@ -1,10 +1,18 @@
 package com.example.androidnavigationimplementation
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.navigateUp
 import com.example.androidnavigationimplementation.databinding.ActivityMainBinding
 import com.example.androidnavigationimplementation.databinding.NavHeaderMainBinding
 import com.example.androidnavigationimplementation.ui.viewmodel.LettersViewModel
@@ -13,11 +21,30 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    // TODO: initialize navController
 
-    // TODO: initialize appBarConfiguration
+    /**
+     * We’ll use navController to navigate from one fragment to another.
+     * Import findNavController from androidx.navigation.findNavController.
+     * Other way get it => (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+     */
+    private val navController by lazy {
+        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+    }
+
+    /**
+     * [appBarConfiguration] defines which fragments are the top level fragments so the drawerLayout and hamburger icon can work properly.
+     */
+    private val appBarConfiguration by lazy {
+        AppBarConfiguration(
+            setOf(
+                R.id.sentFragment,
+                R.id.inboxFragment
+            ), drawerLayout
+        )
+    }
 
     private var lettersViewModel: LettersViewModel? = null
+
     private lateinit var headerBinding: NavHeaderMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +53,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
         setupNavigation()
         setupViewModel()
-        setupViews()
+        setupViewsListener()
     }
 
     override fun onDestroy() {
@@ -49,9 +76,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setupNavigation() {
-        // TODO: setup navController with drawerLayout
-        // TODO: setup navController with toolbar and appBarConfiguration
-        // TODO: add destination listener to navController
+        /**
+         * Connect [navController] with [drawerLayout]
+         */
+        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+        /**
+         * Connect [toolbar], [navController] and [appBarConfiguration] together.
+         * This makes your [navController] aware of top-level fragments defined in appBarConfiguration.
+         */
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration)
+
+        /**
+         *  [fab] action button and [toolbar] based on the destination fragment.
+         *  Here you want to hide [fab] action button when you’re on [CreateLetterFragment], [PresentationFragment] and [EditProfileFragment].
+         *  On [PresentationFragment], hide the [toolbar] so that we can read your love letters without distraction.
+
+         */
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id in arrayOf(R.id.createLetterFragment, R.id.presentationFragment,R.id.editProfileFragment)) {
+                fab.hide()
+            } else {
+                fab.show()
+            }
+            toolbar.isVisible = destination.id != R.id.presentationFragment
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration) ||  super.onSupportNavigateUp()
     }
 
     private fun setupViewModel() {
@@ -60,7 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO: load profile with lettersViewModel
     }
 
-    private fun setupViews() {
+    private fun setupViewsListener() {
         navView.setNavigationItemSelectedListener(this)
         fab.setOnClickListener {
             // TODO: navigate to create letter fragment
@@ -75,19 +127,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Since [InboxFragment] is the home fragment, you use popBackStack to remove other fragments from the navigation stack.
+     * The second parameter indicates whether [InboxFragment] should also pop out of the stack
+     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_inbox -> {
-                // TODO: navigate to inbox fragment
+                navController.popBackStack(R.id.inboxFragment, false)
             }
             R.id.nav_sent -> {
-                // TODO: navigate to sent fragment
+                navController.navigate(R.id.sentFragment)
             }
             R.id.nav_privacy_policy -> {
-                // TODO: navigate to privacy policy fragment
+                navController.navigate(Uri.parse("loveletter://agreement/privacy-policy"))
             }
             R.id.nav_terms_of_service -> {
-                // TODO: navigate to privacy terms of service fragment
+                navController.navigate(Uri.parse("loveletter://agreement/terms-of-service"))
             }
         }
         drawerLayout.closeDrawer(GravityCompat.START)
