@@ -3,12 +3,10 @@ package com.example.androidnavigationimplementation
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -25,7 +23,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /**
      * We’ll use navController to navigate from one fragment to another.
      * Import findNavController from androidx.navigation.findNavController.
-     * Other way get it => (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
      */
     private val navController by lazy {
         (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
@@ -115,7 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setupViewsListener() {
         navView.setNavigationItemSelectedListener(this)
         fab.setOnClickListener {
-            // TODO: navigate to create letter fragment
+            navController.navigate(R.id.createLetterFragment)
         }
     }
 
