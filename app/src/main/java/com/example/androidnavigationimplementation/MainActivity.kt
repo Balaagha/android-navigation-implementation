@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelLazy
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -20,6 +23,8 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+
+
     /**
      * We’ll use navController to navigate from one fragment to another.
      * Import findNavController from androidx.navigation.findNavController.
@@ -27,6 +32,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val navController by lazy {
         (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
     }
+
+    /**
+     * default value = { this }
+     * for activity scope = { requireActivity() }
+     */
+    private val viewModelFactoryOwner: (() -> ViewModelStoreOwner) = {
+        navController.getViewModelStoreOwner(R.id.nav_graph)
+    }
+
+    /**
+     * In the fragment we can use [createViewModelLazy] method for it. (with this library: androidx.fragment:fragment-ktx:1.3.0-alpha06)
+     */
+    private val factoryProducer: ViewModelProvider.Factory by lazy { defaultViewModelProviderFactory }
+
+    private val lettersViewModel: LettersViewModel by ViewModelLazy(
+        LettersViewModel::class,
+        { viewModelFactoryOwner.invoke().viewModelStore },
+        { factoryProducer }
+    )
 
     /**
      * [appBarConfiguration] defines which fragments are the top level fragments so the drawerLayout and hamburger icon can work properly.
@@ -39,8 +63,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ), drawerLayout
         )
     }
-
-    private var lettersViewModel: LettersViewModel? = null
 
     private lateinit var headerBinding: NavHeaderMainBinding
 
@@ -90,7 +112,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
          */
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id in arrayOf(R.id.createLetterFragment, R.id.presentationFragment,R.id.editProfileFragment)) {
+            if (destination.id in arrayOf(R.id.createLetterFragment,
+                    R.id.presentationFragment,
+                    R.id.editProfileFragment)
+            ) {
                 fab.hide()
             } else {
                 fab.show()
@@ -99,14 +124,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration) ||  super.onSupportNavigateUp()
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     private fun setupViewModel() {
-        // TODO: initialize lettersViewModel
-        // TODO: assign lettersViewModel to headerBinding
-        // TODO: load profile with lettersViewModel
+        try {
+            /** [This's OTHER WAY FOR INITIALIZATION OF VIEWMODEL]
+             * Instead of the usual way of getting ViewModelProviders from Activity or Fragment like ViewModelProviders.of(this),
+             * here you get ViewModelProvider from navigation graph id, which is R.id.nav_graph.
+             * This ensures you’re using the same ViewModel across entire graph.
+             */
+//            val viewModelProvider = ViewModelProvider(
+//                navController.getViewModelStoreOwner(R.id.nav_graph),
+//                ViewModelProvider.AndroidViewModelFactory(application)
+//            )
+            /**
+             * Get your LettersViewModel from viewModelProvider, which you created in the line above.
+             */
+//            lettersViewModel = viewModelProvider[LettersViewModel::class.java]
+            /**
+             * This is the data binding logic for the header in the navigation drawer.
+             * If you’re curious, check nav_header_main.xml. The header binding requires the viewModel instance of LettersViewModel class.
+             */
+            headerBinding.viewModel = lettersViewModel
+            // Load profile information from SharedPreferences.
+            lettersViewModel?.loadProfile()  //4
+        } catch (e: IllegalArgumentException) {
+            /**
+             * An exception happens when the app is launched via a deep link.
+             * Navigation component can’t handle the initialization of a ViewModel scoped to Navigation graph.
+             * The temporary solution is to catch the exception.
+             */
+            e.printStackTrace()
+        }
     }
 
     private fun setupViewsListener() {

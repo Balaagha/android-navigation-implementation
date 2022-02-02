@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.navGraphViewModels
 import com.example.androidnavigationimplementation.R
 import com.example.androidnavigationimplementation.databinding.FragmentEditProfileBinding
 import com.example.androidnavigationimplementation.ui.viewmodel.LettersViewModel
@@ -13,7 +15,8 @@ import kotlinx.android.synthetic.main.fragment_edit_profile.*
 
 class EditProfileFragment : DialogFragment() {
 
-    private val lettersViewModel: LettersViewModel? = null
+    private val lettersViewModel: LettersViewModel by navGraphViewModels(R.id.nav_graph)
+    open val viewModelFactoryOwner: (() -> ViewModelStoreOwner) = { this }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
